@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPTTM問答系統_Beta</title>
+    <style>
+        :root { 
+            --primary: #1a73e8; 
+            --hover: #1557b0; 
+            --bg: #f8fafc; 
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --success-bg: #f0fdf4;
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+        }
+        
+        body { 
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; 
+            line-height: 1.6; 
+            padding: 40px 20px; 
+            max-width: 760px; 
+            margin: auto; 
+            background: var(--bg); 
+            color: var(--text); 
+        }
+        
+        .card { 
+            background: var(--card-bg); 
+            padding: 40px; 
+            border-radius: 16px; 
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05); 
+            margin-bottom: 25px; 
+            border: 1px solid var(--border);
+        }
+        
+        .hidden { display: none !important; }
+        
+        h1 { 
+            color: var(--primary); 
+            text-align: center; 
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 35px;
+            letter-spacing: -0.025em;
+        }
+        
+        h2 { font-size: 1.5rem; font-weight: 600; margin-top: 0; margin-bottom: 20px; }
+        h3 { font-size: 1.2rem; font-weight: 600; margin-top: 25px; }
+        
+        button { 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            padding: 12px 26px; 
+            cursor: pointer; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            font-weight: 500;
+            transition: all 0.2s ease; 
+            box-shadow: 0 4px 6px -1px rgba(26, 115, 232, 0.1), 0 2px 4px -1px rgba(26, 115, 232, 0.06);
+        }
+        
+        button:hover { 
+            background: var(--hover); 
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(26, 115, 232, 0.2);
+        }
+        
+        button:active { transform: translateY(0); }
+        button:disabled { background: #cbd5e1; color: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+        
+        input[type="text"], input[type="password"] { 
+            padding: 12px 16px; 
+            width: calc(100% - 34px); 
+            max-width: 320px; 
+            border: 1px solid var(--border); 
+            border-radius: 8px; 
+            margin-bottom: 15px; 
+            font-size: 16px; 
+            transition: all 0.2s ease;
+            background: #fff;
+        }
+        
+        input[type="text"]:focus, input[type="password"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.15);
+        }
+        
+        .option-row { 
+            margin: 12px 0; 
+            padding: 14px 18px; 
+            border: 1px solid var(--border); 
+            border-radius: 8px; 
+            background: #fff; 
+            transition: all 0.2s ease;
+        }
+        
+        .option-row:hover {
+            border-color: var(--primary);
+            background: #f8fbff;
+            transform: translateY(-1px);
+        }
+        
+        .option-row label { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            cursor: pointer; 
+            width: 100%;
+            font-size: 15px;
+        }
+        
+        .option-row input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            cursor: pointer;
+        }
+        
+        .status-ok { color: #16a34a; font-weight: 500; }
+        .status-bad { color: var(--danger); font-weight: 500; }
+        
+        .result-item { 
+            border: 1px solid var(--border); 
+            border-radius: 10px; 
+            padding: 18px; 
+            margin-bottom: 15px; 
+            text-align: left; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        
+        .result-item.correct { 
+            border-color: var(--success); 
+            background: var(--success-bg); 
+            color: #14532d;
+        }
+        
+        .result-item.wrong { 
+            border-color: var(--danger); 
+            background: var(--danger-bg); 
+            color: #7f1d1d;
+        }
+        
+        .result-item div { margin-bottom: 4px; }
+        .result-item div:last-child { margin-bottom: 0; }
+        
+        textarea { width: 100%; height: 150px; border-radius: 8px; border: 1px solid var(--border); padding: 12px; box-sizing: border-box; font-family: monospace; font-size: 14px; }
+        textarea:focus { outline: none; border-color: var(--primary); }
+        
+        .progress { font-size: 0.95em; color: var(--text-light); margin-top: 15px; text-align: right; font-weight: 500; }
+        hr { margin: 35px 0; border: 0; border-top: 1px solid var(--border); }
+    </style>
+</head>
+<body>
+    <img src="https://www.cpttm.org.mo/t/cpttm-30th-logo-ca.png" alt="CPTTM 30th Logo" style="max-width: 260px; width: 100%; height: auto; margin: 10px auto 30px auto; display: block;">
+    <h1>CPTTM問答系統_Beta</h1>
+
+    <div id="role-section" class="card" style="text-align: center;">
+        <h2>請選擇您的身份</h2>
+        <div style="display: flex; justify-content: center; gap: 15px; margin-top: 25px;">
+            <button onclick="showSection('user-section')">員工(開始答題)</button>
+            <button onclick="showSection('admin-login-section')" style="background: #34a853; box-shadow: 0 4px 6px -1px rgba(52, 168, 83, 0.15);">管理員</button>
+        </div>
+    </div>
+
+    <div id="admin-login-section" class="card hidden" style="text-align: center;">
+        <img src="https://www.cpttm.org.mo/t/cpttm-30th-logo-ca.png" alt="CPTTM 30th Logo" style="max-width: 260px; width: 100%; height: auto; margin: 10px auto 30px auto; display: block;">
+        <h2>管理員身分驗證</h2>
+        <p style="color: var(--text-light); margin-bottom: 25px;">系統將連線至 NocoDB 安全驗證您的身份</p>
+        <div style="margin-top: 20px;">
+            <input type="text" id="admin-username" placeholder="請輸入管理員帳號"><br>
+            <input type="password" id="admin-password" placeholder="請輸入管理員密碼" onkeypress="if(event.keyCode===13) verifyAdminLogin()"><br>
+            <button onclick="verifyAdminLogin()" id="btn-admin-login">登入控制台</button>
+            <button onclick="location.reload()" style="background: #64748b; box-shadow: 0 4px 6px -1px rgba(100, 116, 139, 0.15); margin-left: 10px;">返回首頁</button>
+        </div>
+    </div>
+
+    <div id="user-section" class="card hidden">
+        <h2>開始作答 (共30題)</h2>
+        <div id="login-container">
+            <input type="text" id="username" placeholder="請輸員工編號(eg. 15-123)">
+            <br>
+            <button onclick="startQuiz()" id="btn-start">進入測試</button>
+        </div>
+        
+        <div id="quiz-container" class="hidden">
+            <h3 style="font-size: 1.3em; margin-bottom: 20px; border-bottom: 2px solid var(--primary); padding-bottom: 8px;">請完成以下題目</h3>
+            <div id="questions-list"></div>
+            <button onclick="submitQuiz()" id="btn-submit" style="margin-top: 20px; width: 100%;">提交</button>
+            <div id="submit-message" class="progress"></div>
+        </div>
+
+        <div id="result-container" class="hidden" style="text-align: center;">
+            <h2 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 10px;">測驗結束，謝謝參與！</h2>
+            <div style="background: #f1f5f9; padding: 20px; border-radius: 12px; margin: 20px 0; display: inline-block; min-width: 240px;">
+                <p style="font-size: 1.1em; margin: 5px 0;">您的最終得分：<strong id="score" style="font-size: 1.6em; color: var(--primary);"></strong></p>
+                <p style="font-size: 1.1em; margin: 5px 0;">答對率：<strong id="percentage" style="font-size: 1.4em; color: #16a34a;"></strong></p>
+            </div>
+            <p id="encouragement" style="font-weight: 500; font-size: 1.1em; margin-bottom: 25px;"></p>
+            <div id="result-breakdown" style="margin-top: 25px;"></div>
+            <button onclick="location.reload()" style="margin-top: 25px; background: #64748b;">返回首頁</button>
+        </div>
+    </div>
+
+    <div id="admin-section" class="card hidden">
+        <h2>管理員控制台</h2>
+        
+        <h3>1. 匯入題庫 (CSV格式)</h3>
+        <p style="font-size: 0.9em; color: var(--text-light); margin-bottom: 15px;">欄位：q, a1, a2, a3, a4, correct（correct 填 1~4：1=a1、2=a2、3=a3、4=a4；也可用 A/B/C/D）</p>
+        
+        <button onclick="downloadCsvTemplate()" style="background: #0ea5e9; box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.15); margin-bottom: 20px; font-size: 0.9em; padding: 10px 18px;">📥 下載 CSV 匯入模板</button>
+        <br>
+
+        <input type="file" id="csv-file" accept=".csv,text/csv" style="margin-bottom: 10px;"><br>
+        <div id="import-status" style="margin-top: 8px; margin-bottom: 12px; font-size: 0.92em;"></div>
+        <button onclick="importQuestions()" id="btn-import">匯入至 NocoDB</button>
+        <hr>
+        
+        <h3>2. 匯出成績單</h3>
+        <button onclick="exportResults()" id="btn-export" style="background: #eab308; color: #1e293b; box-shadow: 0 4px 6px -1px rgba(234, 179, 8, 0.15);">下載 CSV 成績單</button>
+        
+        <br><br>
+        <button onclick="location.reload()" style="background: #64748b;">返回首頁</button>
+    </div>
+
+    <script>
+        // ==========================================
+        // ⚙️ NocoDB 配置區 (完全保留原設定)
+        // ==========================================
+        const NOCODB_CONFIG = {
+            apiToken: "nc_pat_Z5MNO9hzgUDKsIDfqy5ccS3LOw7lzkvovO9H6WqA",
+            baseId: "ptt53c7497ked0y",
+            apiRoot: "https://app.nocodb.com/api/v2/tables",
+            tables: {
+                questions: "muwuz8c3sy71phx",
+                results: "m8fm3ni4mpcg0ys",
+                users: "mulspf6usv7julr",
+                admins: "m3nu7sff2uh24rm" 
+            }
+        };
+
+        // 全域變數
+        let questions = [];
+        let currentUserName = "";
+        let answerSheet = [];
+        let latestBreakdown = [];
+
+        // --- 共用 API 請求函式 ---
+        async function nocoApi(method, tableId, query = "", body = null) {
+            const url = `${NOCODB_CONFIG.apiRoot}/${tableId}/records${query}`;
+            const options = {
+                method: method,
+                headers: {
+                    'xc-token': NOCODB_CONFIG.apiToken,
+                    'Content-Type': 'application/json'
+                }
+            };
+            if (body) options.body = JSON.stringify(body);
+            
+            const response = await fetch(url, options);
+            const text = await response.text();
+            let data = {};
+            if (text) {
+                try { data = JSON.parse(text); } catch (error) { data = { message: text }; }
+            }
+            if (!response.ok) throw new Error(`API 錯誤狀態: ${response.status} ${data.msg || data.message || ""}`);
+            return data;
+        }
+
+        function getList(data) {
+            return Array.isArray(data?.list) ? data.list : (Array.isArray(data?.records) ? data.records : []);
+        }
+
+        async function nocoInsertMany(tableId, rows) {
+            if (!rows.length) return;
+            await nocoApi('POST', tableId, "", rows);
+        }
+
+        // 洗牌演算法 (Fisher-Yates Shuffle) - 用於隨機打亂題目
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // 切換顯示區塊
+        function showSection(id) {
+            document.getElementById('role-section').classList.add('hidden');
+            document.getElementById('admin-login-section').classList.add('hidden');
+            document.getElementById('user-section').classList.add('hidden');
+            document.getElementById('admin-section').classList.add('hidden');
+            
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        // ==========================================
+        // 🔒 管理員線上帳密驗證邏輯
+        // ==========================================
+        async function verifyAdminLogin() {
+            const btn = document.getElementById('btn-admin-login');
+            const userField = document.getElementById('admin-username');
+            const pwdField = document.getElementById('admin-password');
+            
+            const username = userField.value.trim();
+            const password = pwdField.value;
+
+            if (!username || !password) return alert("請輸入完整的帳號與密碼！");
+
+            try {
+                btn.disabled = true;
+                btn.innerText = "安全驗證中...";
+
+                const queryFilter = `?where=(username,eq,${encodeURIComponent(username)})~and(password,eq,${encodeURIComponent(password)})`;
+                
+                const response = await nocoApi('GET', NOCODB_CONFIG.tables.admins, queryFilter);
+                const matchedRecords = getList(response);
+
+                if (matchedRecords.length > 0) {
+                    userField.value = "";
+                    pwdField.value = "";
+                    showSection('admin-section');
+                } else {
+                    alert("驗證失敗：帳號或密碼錯誤！");
+                    pwdField.value = "";
+                }
+            } catch (error) {
+                alert("伺服器驗證出錯：" + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "登入控制台";
+            }
+        }
+
+        // ==========================================
+        // 📥 下載 CSV 模板邏輯
+        // ==========================================
+        function downloadCsvTemplate() {
+            const csvContent = "\uFEFFq,a1,a2,a3,a4,correct\n" +
+                               "\"這是一道範例題目，答案是 A\",\"選項 A (正確)\",\"選項 B\",\"選項 C\",\"選項 D\",1\n" +
+                               "\"如果你要選 B，請在正確欄位填 2 或是 B\",\"選項 A\",\"選項 B (正確)\",\"選項 C\",\"選項 D\",B";
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute("download", "題庫匯入模板.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // ==========================================
+        // 👨‍💼 管理員功能邏輯 (匯入/匯出)
+        // ==========================================
+        function parseCsvLine(line) {
+            const result = [];
+            let current = "";
+            let inQuotes = false;
+
+            for (let i = 0; i < line.length; i++) {
+                const ch = line[i];
+                if (ch === '"') {
+                    if (inQuotes && line[i + 1] === '"') {
+                        current += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (ch === ',' && !inQuotes) {
+                    result.push(current.trim());
+                    current = "";
+                } else {
+                    current += ch;
+                }
+            }
+            result.push(current.trim());
+            return result;
+        }
+
+        function correctToIndex(raw) {
+            const v = String(raw ?? "").trim().toUpperCase();
+            if (["A", "B", "C", "D"].includes(v)) return ["A", "B", "C", "D"].indexOf(v);
+            const num = parseInt(v, 10);
+            if (Number.isNaN(num)) return 0;
+            if (num >= 1 && num <= 4) return num - 1;
+            if (num >= 0 && num <= 3) return num;
+            return 0;
+        }
+
+        function normalizeCorrect(raw) {
+            return correctToIndex(raw) + 1;
+        }
+
+        async function importQuestions() {
+            const btn = document.getElementById('btn-import');
+            const fileInput = document.getElementById('csv-file');
+            const status = document.getElementById('import-status');
+            if (!fileInput.files || fileInput.files.length === 0) return alert("請先選擇 CSV 檔案");
+
+            try {
+                btn.disabled = true;
+                btn.innerText = "上傳中...";
+                status.className = "";
+                status.innerText = "解析 CSV 中...";
+
+                const text = await fileInput.files[0].text();
+                const lines = text.replace(/\r/g, "").split("\n").map(l => l.trim()).filter(Boolean);
+                if (lines.length < 2) throw new Error("CSV 至少需要標題列 + 1 筆資料");
+
+                const rows = lines.slice(1).map((line, idx) => {
+                    const cols = parseCsvLine(line);
+                    if (cols.length < 6) throw new Error(`第 ${idx + 2} 列欄位不足`);
+                    return {
+                        q: cols[0],
+                        a1: cols[1],
+                        a2: cols[2],
+                        a3: cols[3],
+                        a4: cols[4],
+                        correct: normalizeCorrect(cols[5]),
+                        is_active: true
+                    };
+                });
+
+                await nocoInsertMany(NOCODB_CONFIG.tables.questions, rows);
+                status.className = "status-ok";
+                status.innerText = `匯入成功，共 ${rows.length} 筆`;
+                fileInput.value = "";
+            } catch (error) {
+                status.className = "status-bad";
+                status.innerText = "匯入失敗：" + error.message;
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "匯入至 NocoDB";
+            }
+        }
+
+        async function exportResults() {
+            const btn = document.getElementById('btn-export');
+            try {
+                btn.disabled = true;
+                btn.innerText = "資料讀取中...";
+
+                const response = await nocoApi('GET', NOCODB_CONFIG.tables.results, '?limit=1000');
+                const records = getList(response);
+                let usersById = {};
+
+                try {
+                    const usersResponse = await nocoApi('GET', NOCODB_CONFIG.tables.users, '?limit=1000');
+                    const users = getList(usersResponse);
+                    usersById = users.reduce((acc, u) => {
+                        const id = u.user_id || u.id || u.UserId;
+                        const name = u.name || u.Name || "";
+                        if (id) acc[id] = name;
+                        return acc;
+                    }, {});
+                } catch (error) {
+                    // 略過
+                }
+
+                if (records.length === 0) return alert("目前沒有任何成績記錄。");
+
+                let csvContent = "\uFEFF員工ID,姓名,得分,總題數,提交時間\n";
+                records.forEach(r => {
+                    const userId = r.user_id || r.UserId || "";
+                    const name = r.name || r.UserName || usersById[userId] || "";
+                    const score = r.score || r.Score || 0;
+                    const total = r.total || r.TotalQuestions || 0;
+                    const ts = r.submitted_at || r.SubmittedAt || r.CreatedAt || "";
+                    csvContent += `${userId},${name},${score},${total},${ts}\n`;
+                });
+
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.setAttribute("download", `測驗成績單_${new Date().toLocaleDateString()}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+            } catch (error) {
+                alert("匯出失敗：" + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "下載 CSV 成績單";
+            }
+        }
+
+        // ==========================================
+        // 🧑‍💻 員工答題邏輯
+        // ==========================================
+        async function startQuiz() {
+            const btn = document.getElementById('btn-start');
+            currentUserName = document.getElementById('username').value.trim();
+
+            if (!currentUserName) return alert("請輸入您的姓名以開始測驗。");
+
+            try {
+                btn.disabled = true;
+                btn.innerText = "載入題目中...";
+
+                const response = await nocoApi('GET', NOCODB_CONFIG.tables.questions, '?limit=1000');
+                let allQuestions = getList(response).filter(q => q.is_active !== false && q.IsActive !== false);
+
+                if (allQuestions.length === 0) throw new Error("資料庫中目前沒有題目，請聯絡管理員。");
+
+                // 💡 升級功能：呼叫洗牌函數將題庫亂序，並精準切取前 30 題
+                shuffleArray(allQuestions);
+                questions = allQuestions.slice(0, 30);
+                
+                answerSheet = new Array(questions.length).fill(null);
+
+                document.getElementById('login-container').classList.add('hidden');
+                document.getElementById('quiz-container').classList.remove('hidden');
+                renderQuestionList();
+            } catch (error) {
+                alert(error.message);
+                btn.disabled = false;
+                btn.innerText = "進入測試";
+            }
+        }
+
+        function questionText(q) {
+            return q.q || q.Question || "";
+        }
+
+        function questionOptions(q) {
+            return [q.a1 || q.OptionA || "", q.a2 || q.OptionB || "", q.a3 || q.OptionC || "", q.a4 || q.OptionD || ""];
+        }
+
+        function renderQuestionList() {
+            const list = document.getElementById('questions-list');
+            list.innerHTML = "";
+            questions.forEach((q, index) => {
+                const wrapper = document.createElement("div");
+                wrapper.style.marginBottom = "25px";
+                wrapper.innerHTML = `<div style="font-weight: 600; font-size: 1.1rem; margin-bottom: 12px; color: var(--text);">${index + 1}. ${questionText(q)}</div>`;
+
+                questionOptions(q).forEach((opt, optIndex) => {
+                    const row = document.createElement("div");
+                    row.className = "option-row";
+                    row.innerHTML = `
+                        <label>
+                            <input type="radio" name="q_${index}" value="${optIndex}">
+                            <span>${String.fromCharCode(65 + optIndex)}. ${opt}</span>
+                        </label>
+                    `;
+                    wrapper.appendChild(row);
+                });
+
+                list.appendChild(wrapper);
+            });
+        }
+
+        function collectAnswers() {
+            questions.forEach((q, index) => {
+                const selected = document.querySelector(`input[name="q_${index}"]:checked`);
+                answerSheet[index] = selected ? parseInt(selected.value, 10) : null;
+            });
+        }
+
+        function normalizeCorrectIndex(q) {
+            const raw = q.correct ?? q.CorrectAnswer ?? 1;
+            return correctToIndex(raw);
+        }
+
+        async function submitQuiz() {
+            const btn = document.getElementById('btn-submit');
+            const message = document.getElementById('submit-message');
+            collectAnswers();
+
+            const unanswered = answerSheet.filter(x => x === null).length;
+            if (unanswered > 0) {
+                message.className = "progress status-bad";
+                message.innerText = `尚有 ${unanswered} 題未作答，請先完成。`;
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "提交中...";
+            message.className = "progress";
+            message.innerText = "計算成績並提交中...";
+
+            let userScore = 0;
+            latestBreakdown = questions.map((q, index) => {
+                const picked = answerSheet[index];
+                const correct = normalizeCorrectIndex(q);
+                const isCorrect = picked === correct;
+                if (isCorrect) userScore++;
+                return { q, picked, correct, isCorrect };
+            });
+
+            try {
+                await nocoInsertMany(NOCODB_CONFIG.tables.results, [{
+                    user_id: currentUserName,
+                    name: currentUserName,
+                    score: userScore,
+                    total: questions.length,
+                    submitted_at: new Date().toISOString()
+                }]);
+                finishQuiz(userScore);
+            } catch (error) {
+                message.className = "progress status-bad";
+                message.innerText = "提交失敗：" + error.message;
+                btn.disabled = false;
+                btn.innerText = "Submit";
+            }
+        }
+
+        async function finishQuiz(userScore) {
+            document.getElementById('quiz-container').classList.add('hidden');
+            const resultContainer = document.getElementById('result-container');
+            resultContainer.classList.remove('hidden');
+            
+            const scoreText = `${userScore} / ${questions.length}`;
+            const percentage = questions.length ? Math.round((userScore / questions.length) * 100) : 0;
+            document.getElementById('score').innerText = scoreText;
+            document.getElementById('percentage').innerText = `${percentage}%`;
+
+            const encouragement = document.getElementById('encouragement');
+            
+            // 💡 修正：使用 === 進行嚴格比較，且將 100 分的高分判斷置於首位
+            if (percentage === 100) {
+                encouragement.style.color = "#16a34a";
+                encouragement.innerText = "全對！神奇、頂級、超卓！";
+            } else if (percentage >= 80) {
+                encouragement.style.color = "#16a34a";
+                encouragement.innerText = "表現很棒！繼續保持。";
+            } else if (percentage >= 60) {
+                encouragement.style.color = "#eab308";
+                encouragement.innerText = "做得不錯，再複習幾題會更好。";
+            } else {
+                encouragement.style.color = "var(--danger)";
+                encouragement.innerText = "別灰心，檢視錯題後再挑戰一次，只要有心，人人都可以100分！";
+            }
+
+            const breakdown = document.getElementById('result-breakdown');
+            breakdown.innerHTML = "";
+            latestBreakdown.forEach((item, index) => {
+                const options = questionOptions(item.q);
+                const div = document.createElement("div");
+                div.className = `result-item ${item.isCorrect ? "correct" : "wrong"}`;
+                div.innerHTML = `
+                    <div style="font-weight: 600; margin-bottom: 6px;"><strong>第 ${index + 1} 題：</strong>${questionText(item.q)}</div>
+                    <div style="font-size: 14px;">你的答案：${item.picked === null ? "未作答" : `${String.fromCharCode(65 + item.picked)}. ${options[item.picked] || ""}`}</div>
+                    <div style="font-size: 14px; font-weight: 500;">正確答案：${String.fromCharCode(65 + item.correct)}. ${options[item.correct] || ""}</div>
+                `;
+                breakdown.appendChild(div);
+            });
+        }
+    </script>
+</body>
+</html>
