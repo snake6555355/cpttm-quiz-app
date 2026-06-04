@@ -8,15 +8,13 @@
         :root { 
             --primary: #1a73e8; 
             --hover: #1557b0; 
-            --bg: #f8fafc; 
-            --card-bg: #ffffff;
             --text: #1e293b;
             --text-light: #64748b;
-            --border: #e2e8f0;
+            --border: rgba(226, 232, 240, 0.8);
             --success: #10b981;
-            --success-bg: #f0fdf4;
+            --success-bg: rgba(240, 253, 244, 0.9);
             --danger: #ef4444;
-            --danger-bg: #fef2f2;
+            --danger-bg: rgba(254, 242, 242, 0.9);
         }
         
         body { 
@@ -25,17 +23,24 @@
             padding: 40px 20px; 
             max-width: 760px; 
             margin: auto; 
-            background: var(--bg); 
             color: var(--text); 
+            /* 💡 淺藍色半透明經典圖騰背景 */
+            background-color: #f0f9ff;
+            background-image: radial-gradient(circle at center, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 100%), 
+                              url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%237dd3fc' fill-opacity='0.25'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            background-attachment: fixed;
         }
         
+        /* 💡 毛玻璃卡片效果 (Glassmorphism) */
         .card { 
-            background: var(--card-bg); 
+            background: rgba(255, 255, 255, 0.85); 
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             padding: 40px; 
             border-radius: 16px; 
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05); 
             margin-bottom: 25px; 
-            border: 1px solid var(--border);
+            border: 1px solid rgba(255, 255, 255, 0.6);
         }
         
         .hidden { display: none !important; }
@@ -47,6 +52,7 @@
             font-weight: 700;
             margin-bottom: 35px;
             letter-spacing: -0.025em;
+            text-shadow: 0 2px 4px rgba(255,255,255,0.5);
         }
         
         h2 { font-size: 1.5rem; font-weight: 600; margin-top: 0; margin-bottom: 20px; }
@@ -72,7 +78,7 @@
         }
         
         button:active { transform: translateY(0); }
-        button:disabled { background: #cbd5e1; color: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+        button:disabled { background: rgba(203, 213, 225, 0.8); color: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
         
         input[type="text"], input[type="password"] { 
             padding: 12px 16px; 
@@ -83,13 +89,14 @@
             margin-bottom: 15px; 
             font-size: 16px; 
             transition: all 0.2s ease;
-            background: #fff;
+            background: rgba(255, 255, 255, 0.9);
         }
         
         input[type="text"]:focus, input[type="password"]:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.15);
+            background: #fff;
         }
         
         .option-row { 
@@ -97,7 +104,7 @@
             padding: 14px 18px; 
             border: 1px solid var(--border); 
             border-radius: 8px; 
-            background: #fff; 
+            background: rgba(255, 255, 255, 0.7); 
             transition: all 0.2s ease;
         }
         
@@ -105,6 +112,7 @@
             border-color: var(--primary);
             background: #f8fbff;
             transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
         }
         
         .option-row label { 
@@ -133,6 +141,7 @@
             margin-bottom: 15px; 
             text-align: left; 
             box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            background: rgba(255, 255, 255, 0.6);
         }
         
         .result-item.correct { 
@@ -150,15 +159,26 @@
         .result-item div { margin-bottom: 4px; }
         .result-item div:last-child { margin-bottom: 0; }
         
-        textarea { width: 100%; height: 150px; border-radius: 8px; border: 1px solid var(--border); padding: 12px; box-sizing: border-box; font-family: monospace; font-size: 14px; }
-        textarea:focus { outline: none; border-color: var(--primary); }
+        .question-image {
+            max-width: 100%;
+            max-height: 350px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            object-fit: contain;
+            display: block;
+            background: #fff;
+        }
+        
+        textarea { width: 100%; height: 150px; border-radius: 8px; border: 1px solid var(--border); padding: 12px; box-sizing: border-box; font-family: monospace; font-size: 14px; background: rgba(255,255,255,0.8); }
+        textarea:focus { outline: none; border-color: var(--primary); background: #fff;}
         
         .progress { font-size: 0.95em; color: var(--text-light); margin-top: 15px; text-align: right; font-weight: 500; }
         hr { margin: 35px 0; border: 0; border-top: 1px solid var(--border); }
     </style>
 </head>
 <body>
-    <img src="https://www.cpttm.org.mo/t/cpttm-30th-logo-ca.png" alt="CPTTM 30th Logo" style="max-width: 260px; width: 100%; height: auto; margin: 10px auto 30px auto; display: block;">
+    <img src="https://www.cpttm.org.mo/t/cpttm-30th-logo-ca.png" alt="CPTTM 30th Logo" style="max-width: 260px; width: 100%; height: auto; margin: 10px auto 30px auto; display: block; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.05));">
     <h1>CPTTM問答系統_Beta</h1>
 
     <div id="role-section" class="card" style="text-align: center;">
@@ -170,7 +190,7 @@
     </div>
 
     <div id="admin-login-section" class="card hidden" style="text-align: center;">
-        <img src="https://www.cpttm.org.mo/t/cpttm-30th-logo-ca.png" alt="CPTTM 30th Logo" style="max-width: 260px; width: 100%; height: auto; margin: 10px auto 30px auto; display: block;">
+        <img src="https://www.cpttm.org.mo/t/cpttm-30th-logo-ca.png" alt="CPTTM 30th Logo" style="max-width: 260px; width: 100%; height: auto; margin: 10px auto 30px auto; display: block; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.05));">
         <h2>管理員身分驗證</h2>
         <p style="color: var(--text-light); margin-bottom: 25px;">系統將連線至 NocoDB 安全驗證您的身份</p>
         <div style="margin-top: 20px;">
@@ -182,7 +202,7 @@
     </div>
 
     <div id="user-section" class="card hidden">
-        <h2>開始作答 (共30題)</h2>
+        <h2>員工登入</h2>
         <div id="login-container">
             <input type="text" id="username" placeholder="請輸員工編號(eg. 15-123)">
             <br>
@@ -198,7 +218,7 @@
 
         <div id="result-container" class="hidden" style="text-align: center;">
             <h2 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 10px;">測驗結束，謝謝參與！</h2>
-            <div style="background: #f1f5f9; padding: 20px; border-radius: 12px; margin: 20px 0; display: inline-block; min-width: 240px;">
+            <div style="background: rgba(241, 245, 249, 0.8); padding: 20px; border-radius: 12px; margin: 20px 0; display: inline-block; min-width: 240px; border: 1px solid rgba(226, 232, 240, 0.8);">
                 <p style="font-size: 1.1em; margin: 5px 0;">您的最終得分：<strong id="score" style="font-size: 1.6em; color: var(--primary);"></strong></p>
                 <p style="font-size: 1.1em; margin: 5px 0;">答對率：<strong id="percentage" style="font-size: 1.4em; color: #16a34a;"></strong></p>
             </div>
@@ -212,7 +232,7 @@
         <h2>管理員控制台</h2>
         
         <h3>1. 匯入題庫 (CSV格式)</h3>
-        <p style="font-size: 0.9em; color: var(--text-light); margin-bottom: 15px;">欄位：q, a1, a2, a3, a4, correct（correct 填 1~4：1=a1、2=a2、3=a3、4=a4；也可用 A/B/C/D）</p>
+        <p style="font-size: 0.9em; color: var(--text-light); margin-bottom: 15px;">欄位：q, a1, a2, a3, a4, correct, <strong>img_url</strong>（correct 填 1~4 或 A/B/C/D；img_url 選填，請放圖片網址）</p>
         
         <button onclick="downloadCsvTemplate()" style="background: #0ea5e9; box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.15); margin-bottom: 20px; font-size: 0.9em; padding: 10px 18px;">📥 下載 CSV 匯入模板</button>
         <br>
@@ -231,7 +251,7 @@
 
     <script>
         // ==========================================
-        // ⚙️ NocoDB 配置區 (完全保留原設定)
+        // ⚙️ NocoDB 配置區
         // ==========================================
         const NOCODB_CONFIG = {
             apiToken: "nc_pat_Z5MNO9hzgUDKsIDfqy5ccS3LOw7lzkvovO9H6WqA",
@@ -245,13 +265,11 @@
             }
         };
 
-        // 全域變數
         let questions = [];
         let currentUserName = "";
         let answerSheet = [];
         let latestBreakdown = [];
 
-        // --- 共用 API 請求函式 ---
         async function nocoApi(method, tableId, query = "", body = null) {
             const url = `${NOCODB_CONFIG.apiRoot}/${tableId}/records${query}`;
             const options = {
@@ -282,7 +300,6 @@
             await nocoApi('POST', tableId, "", rows);
         }
 
-        // 洗牌演算法 (Fisher-Yates Shuffle) - 用於隨機打亂題目
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -290,7 +307,6 @@
             }
         }
 
-        // 切換顯示區塊
         function showSection(id) {
             document.getElementById('role-section').classList.add('hidden');
             document.getElementById('admin-login-section').classList.add('hidden');
@@ -298,11 +314,9 @@
             document.getElementById('admin-section').classList.add('hidden');
             
             document.getElementById(id).classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // ==========================================
-        // 🔒 管理員線上帳密驗證邏輯
-        // ==========================================
         async function verifyAdminLogin() {
             const btn = document.getElementById('btn-admin-login');
             const userField = document.getElementById('admin-username');
@@ -338,26 +352,20 @@
             }
         }
 
-        // ==========================================
-        // 📥 下載 CSV 模板邏輯
-        // ==========================================
         function downloadCsvTemplate() {
-            const csvContent = "\uFEFFq,a1,a2,a3,a4,correct\n" +
-                               "\"這是一道範例題目，答案是 A\",\"選項 A (正確)\",\"選項 B\",\"選項 C\",\"選項 D\",1\n" +
-                               "\"如果你要選 B，請在正確欄位填 2 或是 B\",\"選項 A\",\"選項 B (正確)\",\"選項 C\",\"選項 D\",B";
+            const csvContent = "\uFEFFq,a1,a2,a3,a4,correct,img_url\n" +
+                               "\"這是一道普通題目，答案是 A\",\"選項 A\",\"選項 B\",\"選項 C\",\"選項 D\",1,\"\"\n" +
+                               "\"請問圖中的標誌代表什麼意思？\",\"安全出口\",\"嚴禁煙火 (正確)\",\"小心觸電\",\"佩戴安全帽\",2,\"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/No_smoking_symbol.svg/200px-No_smoking_symbol.svg.png\"";
             
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
-            link.setAttribute("download", "題庫匯入模板.csv");
+            link.setAttribute("download", "題庫匯入模板_包含圖片.csv");
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         }
 
-        // ==========================================
-        // 👨‍💼 管理員功能邏輯 (匯入/匯出)
-        // ==========================================
         function parseCsvLine(line) {
             const result = [];
             let current = "";
@@ -423,6 +431,7 @@
                         a3: cols[3],
                         a4: cols[4],
                         correct: normalizeCorrect(cols[5]),
+                        img_url: cols[6] || "", 
                         is_active: true
                     };
                 });
@@ -491,9 +500,6 @@
             }
         }
 
-        // ==========================================
-        // 🧑‍💻 員工答題邏輯
-        // ==========================================
         async function startQuiz() {
             const btn = document.getElementById('btn-start');
             currentUserName = document.getElementById('username').value.trim();
@@ -509,7 +515,6 @@
 
                 if (allQuestions.length === 0) throw new Error("資料庫中目前沒有題目，請聯絡管理員。");
 
-                // 💡 升級功能：呼叫洗牌函數將題庫亂序，並精準切取前 30 題
                 shuffleArray(allQuestions);
                 questions = allQuestions.slice(0, 30);
                 
@@ -525,23 +530,32 @@
             }
         }
 
-        function questionText(q) {
-            return q.q || q.Question || "";
-        }
-
-        function questionOptions(q) {
-            return [q.a1 || q.OptionA || "", q.a2 || q.OptionB || "", q.a3 || q.OptionC || "", q.a4 || q.OptionD || ""];
-        }
+        function questionText(q) { return q.q || q.Question || ""; }
+        function questionImg(q) { return q.img_url || q.ImgUrl || q.image || ""; }
+        function questionOptions(q) { return [q.a1 || q.OptionA || "", q.a2 || q.OptionB || "", q.a3 || q.OptionC || "", q.a4 || q.OptionD || ""]; }
 
         function renderQuestionList() {
             const list = document.getElementById('questions-list');
             list.innerHTML = "";
             questions.forEach((q, index) => {
                 const wrapper = document.createElement("div");
-                wrapper.style.marginBottom = "25px";
-                wrapper.innerHTML = `<div style="font-weight: 600; font-size: 1.1rem; margin-bottom: 12px; color: var(--text);">${index + 1}. ${questionText(q)}</div>`;
+                wrapper.style.marginBottom = "35px";
+                
+                let imgHtml = "";
+                const imgUrl = questionImg(q);
+                if (imgUrl) {
+                    imgHtml = `<img src="${imgUrl}" alt="題目附圖" class="question-image" onerror="this.style.display='none'">`;
+                }
+
+                wrapper.innerHTML = `
+                    <div style="font-weight: 600; font-size: 1.1rem; margin-bottom: 12px; color: var(--text);">
+                        ${index + 1}. ${questionText(q)}
+                    </div>
+                    ${imgHtml}
+                `;
 
                 questionOptions(q).forEach((opt, optIndex) => {
+                    if(!opt) return;
                     const row = document.createElement("div");
                     row.className = "option-row";
                     row.innerHTML = `
@@ -608,7 +622,7 @@
                 message.className = "progress status-bad";
                 message.innerText = "提交失敗：" + error.message;
                 btn.disabled = false;
-                btn.innerText = "Submit";
+                btn.innerText = "提交";
             }
         }
 
@@ -624,7 +638,6 @@
 
             const encouragement = document.getElementById('encouragement');
             
-            // 💡 修正：使用 === 進行嚴格比較，且將 100 分的高分判斷置於首位
             if (percentage === 100) {
                 encouragement.style.color = "#16a34a";
                 encouragement.innerText = "全對！神奇、頂級、超卓！";
@@ -652,6 +665,7 @@
                 `;
                 breakdown.appendChild(div);
             });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
 </body>
