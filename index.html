@@ -24,14 +24,12 @@
             max-width: 760px; 
             margin: auto; 
             color: var(--text); 
-            /* 💡 淺藍色半透明經典圖騰背景 */
             background-color: #f0f9ff;
             background-image: radial-gradient(circle at center, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 100%), 
                               url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%237dd3fc' fill-opacity='0.25'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
             background-attachment: fixed;
         }
         
-        /* 💡 毛玻璃卡片效果 (Glassmorphism) */
         .card { 
             background: rgba(255, 255, 255, 0.85); 
             backdrop-filter: blur(12px);
@@ -169,6 +167,26 @@
             display: block;
             background: #fff;
         }
+
+        /* 💡 超連結按鈕樣式美化 */
+        a.reference-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 15px;
+            background: rgba(26, 115, 232, 0.08);
+            padding: 6px 14px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        
+        a.reference-link:hover {
+            background: rgba(26, 115, 232, 0.15);
+            transform: translateY(-1px);
+        }
         
         textarea { width: 100%; height: 150px; border-radius: 8px; border: 1px solid var(--border); padding: 12px; box-sizing: border-box; font-family: monospace; font-size: 14px; background: rgba(255,255,255,0.8); }
         textarea:focus { outline: none; border-color: var(--primary); background: #fff;}
@@ -232,7 +250,7 @@
         <h2>管理員控制台</h2>
         
         <h3>1. 匯入題庫 (CSV格式)</h3>
-        <p style="font-size: 0.9em; color: var(--text-light); margin-bottom: 15px;">欄位：q, a1, a2, a3, a4, correct, <strong>img_url</strong>（correct 填 1~4 或 A/B/C/D；img_url 選填，請放圖片網址）</p>
+        <p style="font-size: 0.9em; color: var(--text-light); margin-bottom: 15px;">欄位：q, a1, a2, a3, a4, correct, <strong>img_url</strong>, <strong>hyperlink</strong><br>（correct 填 1~4 或 A/B/C/D；img_url 及 hyperlink 為選填欄位）</p>
         
         <button onclick="downloadCsvTemplate()" style="background: #0ea5e9; box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.15); margin-bottom: 20px; font-size: 0.9em; padding: 10px 18px;">📥 下載 CSV 匯入模板</button>
         <br>
@@ -352,15 +370,17 @@
             }
         }
 
+        // 💡 更新：加入 hyperlink 欄位的下載模板
         function downloadCsvTemplate() {
-            const csvContent = "\uFEFFq,a1,a2,a3,a4,correct,img_url\n" +
-                               "\"這是一道普通題目，答案是 A\",\"選項 A\",\"選項 B\",\"選項 C\",\"選項 D\",1,\"\"\n" +
-                               "\"請問圖中的標誌代表什麼意思？\",\"安全出口\",\"嚴禁煙火 (正確)\",\"小心觸電\",\"佩戴安全帽\",2,\"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/No_smoking_symbol.svg/200px-No_smoking_symbol.svg.png\"";
+            const csvContent = "\uFEFFq,a1,a2,a3,a4,correct,img_url,hyperlink\n" +
+                               "\"這是一道普通題目，答案是 A\",\"選項 A\",\"選項 B\",\"選項 C\",\"選項 D\",1,\"\",\"\"\n" +
+                               "\"請問圖中的標誌代表什麼意思？\",\"安全出口\",\"嚴禁煙火 (正確)\",\"小心觸電\",\"佩戴安全帽\",2,\"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/No_smoking_symbol.svg/200px-No_smoking_symbol.svg.png\",\"\"\n" +
+                               "\"想了解更多關於CPTTM的資訊，請查看下方連結後回答成立年份？\",\"1990\",\"1996 (正確)\",\"2000\",\"2005\",2,\"\",\"https://www.cpttm.org.mo/\"";
             
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
-            link.setAttribute("download", "題庫匯入模板_包含圖片.csv");
+            link.setAttribute("download", "題庫匯入模板_包含圖文與連結.csv");
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -405,6 +425,7 @@
             return correctToIndex(raw) + 1;
         }
 
+        // 💡 更新：解析匯入資料時，抓取第 8 欄 hyperlink
         async function importQuestions() {
             const btn = document.getElementById('btn-import');
             const fileInput = document.getElementById('csv-file');
@@ -432,6 +453,7 @@
                         a4: cols[4],
                         correct: normalizeCorrect(cols[5]),
                         img_url: cols[6] || "", 
+                        hyperlink: cols[7] || "", // 新增：讀取第8個欄位作為超連結
                         is_active: true
                     };
                 });
@@ -532,6 +554,8 @@
 
         function questionText(q) { return q.q || q.Question || ""; }
         function questionImg(q) { return q.img_url || q.ImgUrl || q.image || ""; }
+        // 💡 新增：獲取超連結
+        function questionLink(q) { return q.hyperlink || q.Hyperlink || q.link || ""; }
         function questionOptions(q) { return [q.a1 || q.OptionA || "", q.a2 || q.OptionB || "", q.a3 || q.OptionC || "", q.a4 || q.OptionD || ""]; }
 
         function renderQuestionList() {
@@ -541,16 +565,25 @@
                 const wrapper = document.createElement("div");
                 wrapper.style.marginBottom = "35px";
                 
+                // 處理圖片
                 let imgHtml = "";
                 const imgUrl = questionImg(q);
                 if (imgUrl) {
                     imgHtml = `<img src="${imgUrl}" alt="題目附圖" class="question-image" onerror="this.style.display='none'">`;
                 }
 
+                // 💡 處理超連結：若有設定，則生成另開新頁 (target="_blank") 的連結標籤
+                let linkHtml = "";
+                const linkUrl = questionLink(q);
+                if (linkUrl) {
+                    linkHtml = `<a href="${linkUrl}" target="_blank" rel="noopener noreferrer" class="reference-link">🔗 查看相關資料</a>`;
+                }
+
                 wrapper.innerHTML = `
                     <div style="font-weight: 600; font-size: 1.1rem; margin-bottom: 12px; color: var(--text);">
                         ${index + 1}. ${questionText(q)}
                     </div>
+                    ${linkHtml}
                     ${imgHtml}
                 `;
 
