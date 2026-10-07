@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CPTTM問答系統_Beta</title>
+    <title>CPTTM入職導向問一下</title>
     <style>
         :root { 
             --primary: #1a73e8; 
@@ -167,8 +167,7 @@
             display: block;
             background: #fff;
         }
-
-        /* 💡 超連結按鈕樣式美化 */
+        
         a.reference-link {
             color: var(--primary);
             text-decoration: none;
@@ -177,9 +176,9 @@
             align-items: center;
             margin-bottom: 15px;
             background: rgba(26, 115, 232, 0.08);
-            padding: 6px 14px;
+            padding: 8px 16px;
             border-radius: 6px;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             font-weight: 500;
         }
         
@@ -250,7 +249,7 @@
         <h2>管理員控制台</h2>
         
         <h3>1. 匯入題庫 (CSV格式)</h3>
-        <p style="font-size: 0.9em; color: var(--text-light); margin-bottom: 15px;">欄位：q, a1, a2, a3, a4, correct, <strong>img_url</strong>, <strong>hyperlink</strong><br>（correct 填 1~4 或 A/B/C/D；img_url 及 hyperlink 為選填欄位）</p>
+        <p style="font-size: 0.9em; color: var(--text-light); margin-bottom: 15px;">欄位：q, a1, a2, a3, a4, correct, <strong>img_url</strong>, <strong>hyperlink</strong><br>（correct 填 1~4 或 A/B/C/D；img_url 及 hyperlink 為選填，若無請留空）</p>
         
         <button onclick="downloadCsvTemplate()" style="background: #0ea5e9; box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.15); margin-bottom: 20px; font-size: 0.9em; padding: 10px 18px;">📥 下載 CSV 匯入模板</button>
         <br>
@@ -272,11 +271,11 @@
         // ⚙️ NocoDB 配置區
         // ==========================================
         const NOCODB_CONFIG = {
-            apiToken: "nc_pat_Z5MNO9hzgUDKsIDfqy5ccS3LOw7lzkvovO9H6WqA",
+            apiToken: "nc_pat_Fo3sTdscPL50UuUXsAIlvzWJ6tEq4WKxev5Gx1no",
             baseId: "ptt53c7497ked0y",
             apiRoot: "https://app.nocodb.com/api/v2/tables",
             tables: {
-                questions: "muwuz8c3sy71phx",
+                questions: "m4bp0epvn4jhb1x",
                 results: "m8fm3ni4mpcg0ys",
                 users: "mulspf6usv7julr",
                 admins: "m3nu7sff2uh24rm" 
@@ -370,17 +369,16 @@
             }
         }
 
-        // 💡 更新：加入 hyperlink 欄位的下載模板
         function downloadCsvTemplate() {
             const csvContent = "\uFEFFq,a1,a2,a3,a4,correct,img_url,hyperlink\n" +
                                "\"這是一道普通題目，答案是 A\",\"選項 A\",\"選項 B\",\"選項 C\",\"選項 D\",1,\"\",\"\"\n" +
                                "\"請問圖中的標誌代表什麼意思？\",\"安全出口\",\"嚴禁煙火 (正確)\",\"小心觸電\",\"佩戴安全帽\",2,\"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/No_smoking_symbol.svg/200px-No_smoking_symbol.svg.png\",\"\"\n" +
-                               "\"想了解更多關於CPTTM的資訊，請查看下方連結後回答成立年份？\",\"1990\",\"1996 (正確)\",\"2000\",\"2005\",2,\"\",\"https://www.cpttm.org.mo/\"";
+                               "\"想了解更多關於 CPTTM 的資訊，請參考連結內容\",\"選項 A\",\"選項 B (正確)\",\"選項 C\",\"選項 D\",2,\"\",\"https://www.cpttm.org.mo/\"";
             
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
-            link.setAttribute("download", "題庫匯入模板_包含圖文與連結.csv");
+            link.setAttribute("download", "題庫匯入模板_包含圖文連結.csv");
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -425,7 +423,6 @@
             return correctToIndex(raw) + 1;
         }
 
-        // 💡 更新：解析匯入資料時，抓取第 8 欄 hyperlink
         async function importQuestions() {
             const btn = document.getElementById('btn-import');
             const fileInput = document.getElementById('csv-file');
@@ -452,8 +449,8 @@
                         a3: cols[3],
                         a4: cols[4],
                         correct: normalizeCorrect(cols[5]),
-                        img_url: cols[6] || "", 
-                        hyperlink: cols[7] || "", // 新增：讀取第8個欄位作為超連結
+                        img_url: cols[6] || "",
+                        hyperlink: cols[7] || "", 
                         is_active: true
                     };
                 });
@@ -502,7 +499,8 @@
                     const name = r.name || r.UserName || usersById[userId] || "";
                     const score = r.score || r.Score || 0;
                     const total = r.total || r.TotalQuestions || 0;
-                    const ts = r.submitted_at || r.SubmittedAt || r.CreatedAt || "";
+                    // 💡 更新：匯出時優先抓取新加入的 timestamp 欄位
+                    const ts = r.timestamp || r.Timestamp || r.submitted_at || r.SubmittedAt || r.CreatedAt || "";
                     csvContent += `${userId},${name},${score},${total},${ts}\n`;
                 });
 
@@ -554,8 +552,8 @@
 
         function questionText(q) { return q.q || q.Question || ""; }
         function questionImg(q) { return q.img_url || q.ImgUrl || q.image || ""; }
-        // 💡 新增：獲取超連結
         function questionLink(q) { return q.hyperlink || q.Hyperlink || q.link || ""; }
+        
         function questionOptions(q) { return [q.a1 || q.OptionA || "", q.a2 || q.OptionB || "", q.a3 || q.OptionC || "", q.a4 || q.OptionD || ""]; }
 
         function renderQuestionList() {
@@ -565,18 +563,16 @@
                 const wrapper = document.createElement("div");
                 wrapper.style.marginBottom = "35px";
                 
-                // 處理圖片
                 let imgHtml = "";
                 const imgUrl = questionImg(q);
                 if (imgUrl) {
                     imgHtml = `<img src="${imgUrl}" alt="題目附圖" class="question-image" onerror="this.style.display='none'">`;
                 }
 
-                // 💡 處理超連結：若有設定，則生成另開新頁 (target="_blank") 的連結標籤
                 let linkHtml = "";
                 const linkUrl = questionLink(q);
                 if (linkUrl) {
-                    linkHtml = `<a href="${linkUrl}" target="_blank" rel="noopener noreferrer" class="reference-link">🔗 查看相關資料</a>`;
+                    linkHtml = `<a href="${linkUrl}" target="_blank" rel="noopener noreferrer" class="reference-link">🔗 查看相關資料</a><br>`;
                 }
 
                 wrapper.innerHTML = `
@@ -642,13 +638,18 @@
                 return { q, picked, correct, isCorrect };
             });
 
+            // 💡 抓取當下時間並格式化
+            const now = new Date();
+            const formattedTimestamp = now.toLocaleString('zh-HK', { hour12: false });
+
             try {
                 await nocoInsertMany(NOCODB_CONFIG.tables.results, [{
                     user_id: currentUserName,
                     name: currentUserName,
                     score: userScore,
                     total: questions.length,
-                    submitted_at: new Date().toISOString()
+                    submitted_at: now.toISOString(),
+                    timestamp: formattedTimestamp // 💡 新增上傳 timestamp 欄位資料
                 }]);
                 finishQuiz(userScore);
             } catch (error) {
@@ -673,10 +674,10 @@
             
             if (percentage === 100) {
                 encouragement.style.color = "#16a34a";
-                encouragement.innerText = "全對！神奇、頂級、超卓！";
+                encouragement.innerText = "全對！神奇、頂級、超卓！入職新人王就是你！";
             } else if (percentage >= 80) {
                 encouragement.style.color = "#16a34a";
-                encouragement.innerText = "表現很棒！繼續保持。";
+                encouragement.innerText = "表現很棒！";
             } else if (percentage >= 60) {
                 encouragement.style.color = "#eab308";
                 encouragement.innerText = "做得不錯，再複習幾題會更好。";
@@ -693,7 +694,7 @@
                 div.className = `result-item ${item.isCorrect ? "correct" : "wrong"}`;
                 div.innerHTML = `
                     <div style="font-weight: 600; margin-bottom: 6px;"><strong>第 ${index + 1} 題：</strong>${questionText(item.q)}</div>
-                    <div style="font-size: 14px;">你的答案：${item.picked === null ? "未作答" : `${String.fromCharCode(65 + item.picked)}. ${options[item.picked] || ""}`}</div>
+                    <div style="font-size: 14px;">你的答案：${item.picked === null ? "未作答" : `${String.fromCharCode(65 + item.picked)}.${options[item.picked] || ""}`}</div>
                     <div style="font-size: 14px; font-weight: 500;">正確答案：${String.fromCharCode(65 + item.correct)}. ${options[item.correct] || ""}</div>
                 `;
                 breakdown.appendChild(div);
